@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="color: #800080;">Quiz: {{ quiz.title }}</h2>
+
+    <div class="card border-primary mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Question</h4>
+        </div>
+        <div class="card-body">
+            <p>{{ quiz.question }}</p>
+        </div>
+    </div>
+
+    <div class="card border-success mb-4">
+        <div class="card-header bg-success text-white">
+            <h4>Options</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="answer" id="option1" value="{{ quiz.option1 }}">
+                    <label class="form-check-label" for="option1">
+                        {{ quiz.option1 }}
+                    </label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="answer" id="option2" value="{{ quiz.option2 }}">
+                    <label class="form-check-label" for="option2">
+                        {{ quiz.option2 }}
+                    </label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="answer" id="option3" value="{{ quiz.option3 }}">
+                    <label class="form-check-label" for="option3">
+                        {{ quiz.option3 }}
+                    </label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="answer" id="option4" value="{{ quiz.option4 }}">
+                    <label class="form-check-label" for="option4">
+                        {{ quiz.option4 }}
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4" style="color: #800080;">Announcements</h2>
+    <ul class="list-group">
+        {% for announcement in announcements %}
+            <li class="list-group-item mb-3" style="border-color: #800080;">
+                <h5 style="color: #800080;">{{ announcement.title }}</h5>
+                <p>{{ announcement.content }}</p>
+                <small class="text-muted">Class: {{ announcement.classroom.name }}</small>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

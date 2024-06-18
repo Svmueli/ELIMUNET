@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="color: #800080;">Classroom: {{ classroom.name }}</h2>
+
+    <!-- Announcements Section -->
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-white">
+            <h4>
+                <a class="text-white" data-toggle="collapse" href="#collapseAnnouncements" role="button" aria-expanded="false" aria-controls="collapseAnnouncements">
+                    Announcements
+                </a>
+            </h4>
+        </div>
+        <div class="collapse" id="collapseAnnouncements">
+            <div class="card-body">
+                {% for announcement in announcements %}
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>{{ announcement.title }}</h5>
+                                <small class="text-muted">{{ announcement.date_posted }}</small>
+                            </div>
+                            <button class="btn btn-sm btn-link" data-toggle="collapse" data-target="#announcementContent{{ announcement.id }}" aria-expanded="false" aria-controls="announcementContent{{ announcement.id }}">
+                                <span data-feather="chevron-down"></span>
+                            </button>
+                        </div>
+                        <div class="collapse" id="announcementContent{{ announcement.id }}">
+                            <div class="card-body">
+                                <p>{{ announcement.content }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments Section -->
+    <div class="card mb-4 border-success">
+        <div class="card-header bg-success text-white">
+            <h4>
+                <a class="text-white" data-toggle="collapse" href="#collapseAssignments" role="button" aria-expanded="false" aria-controls="collapseAssignments">
+                    Assignments
+                </a>
+            </h4>
+        </div>
+        <div class="collapse" id="collapseAssignments">
+            <div class="card-body">
+                {% for assignment in assignments %}
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>{{ assignment.title }}</h5>
+                                <small class="text-muted">Due: {{ assignment.due_date }}</small>
+                            </div>
+                            <button class="btn btn-sm btn-link" data-toggle="collapse" data-target="#assignmentContent{{ assignment.id }}" aria-expanded="false" aria-controls="assignmentContent{{ assignment.id }}">
+                                <span data-feather="chevron-down"></span>
+                            </button>
+                        </div>
+                        <div class="collapse" id="assignmentContent{{ assignment.id }}">
+                            <div class="card-body">
+                                <p>{{ assignment.description }}</p>
+                                {% if assignment.file %}
+                                    <a href="{{ assignment.file.url }}" class="btn btn-outline-success">Download</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quizzes Section -->
+    <div class="card mb-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h4>
+                <a class="text-white" data-toggle="collapse" href="#collapseQuizzes" role="button" aria-expanded="false" aria-controls="collapseQuizzes">
+                    Quizzes
+                </a>
+            </h4>
+        </div>
+        <div class="collapse" id="collapseQuizzes">
+            <div class="card-body">
+                {% for quiz in quizzes %}
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>{{ quiz.title }}</h5>
+                            </div>
+                            <button class="btn btn-sm btn-link" data-toggle="collapse" data-target="#quizContent{{ quiz.id }}" aria-expanded="false" aria-controls="quizContent{{ quiz.id }}">
+                                <span data-feather="chevron-down"></span>
+                            </button>
+                        </div>
+                        <div class="collapse" id="quizContent{{ quiz.id }}">
+                            <div class="card-body">
+                                <p>{{ quiz.question }}</p>
+                                <ul>
+                                    <li>{{ quiz.option1 }}</li>
+                                    <li>{{ quiz.option2 }}</li>
+                                    <li>{{ quiz.option3 }}</li>
+                                    <li>{{ quiz.option4 }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Materials Section -->
+    <div class="card mb-4 border-purple" style="border-color: #800080;">
+        <div class="card-header text-white" style="background-color: #800080;">
+            <h4>
+                <a class="text-white" data-toggle="collapse" href="#collapseMaterials" role="button" aria-expanded="false" aria-controls="collapseMaterials">
+                    Materials
+                </a>
+            </h4>
+        </div>
+        <div class="collapse" id="collapseMaterials">
+            <div class="card-body">
+                {% for material in materials %}
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5>{{ material.title }}</h5>
+                            </div>
+                            <button class="btn btn-sm btn-link" data-toggle="collapse" data-target="#materialContent{{ material.id }}" aria-expanded="false" aria-controls="materialContent{{ material.id }}">
+                                <span data-feather="chevron-down"></span>
+                            </button>
+                        </div>
+                        <div class="collapse" id="materialContent{{ material.id }}">
+                            <div class="card-body">
+                                {% if material.file %}
+                                    <a href="{{ material.file.url }}" class="btn btn-outline-purple" style="border-color: #800080; color: #800080;">Download</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+    feather.replace();
+</script>

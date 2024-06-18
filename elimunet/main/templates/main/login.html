@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 500px; border-color: #800080;">
+    <div class="card-header text-white" style="background-color: #800080;">
+        <h2 class="mb-0">Login</h2>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-custom">Login</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

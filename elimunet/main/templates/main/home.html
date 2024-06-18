@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card mx-auto" style="max-width: 600px; border-color: #800080;">
+    <div class="card-header text-white" style="background-color: #800080;">
+        <h2 class="mb-0">Welcome to Elimunet</h2>
+    </div>
+    <div class="card-body">
+        <p>Please log in to continue, or <a href="{% url 'register' %}">register</a> if you don't have an account.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Log in</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

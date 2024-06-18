@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ assignment.title }}</h2>
+<p>{{ assignment.description }}</p>
+<p>Due Date: {{ assignment.due_date }}</p>
+{% if assignment.file %}
+    <a href="{{ assignment.file.url }}">Download Assignment File</a>
+{% endif %}
+<h3>Submissions</h3>
+{% if user.userprofile.user_type == 'teacher' %}
+    <ul>
+        {% for submission in assignment.submission_set.all %}
+            <li>{{ submission.student.username }} - <a href="{{ submission.file.url }}">Download</a> - <a href="{% url 'grade_submission' submission.id %}">Grade</a></li>
+        {% endfor %}
+    </ul>
+{% elif user.userprofile.user_type == 'student' %}
+    <form method="post" enctype="multipart/form-data" action="{% url 'submit_assignment' assignment.id %}">
+        {% csrf_token %}
+        <input type="file" name="file">
+        <button type="submit">Submit Assignment</button>
+    </form>
+{% endif %}
+{% endblock %}

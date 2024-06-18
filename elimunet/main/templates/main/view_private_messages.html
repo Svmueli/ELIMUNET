@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="color: #800080;">Private Messages</h2>
+    
+    <!-- Received Messages Section -->
+    <div class="card mb-4 border-success">
+        <div class="card-header bg-success text-white">
+            <h4>Received Messages</h4>
+        </div>
+        <div class="card-body">
+            {% if received_messages %}
+                <div class="list-group">
+                    {% for message in received_messages %}
+                        <div class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ message.sender.username }}</h5>
+                                <small class="text-muted">{{ message.timestamp }}</small>
+                            </div>
+                            <p class="mb-1">{{ message.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You have no received messages.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sent Messages Section -->
+    <div class="card mb-4 border-primary">
+        <div class="card-header bg-primary text-white">
+            <h4>Sent Messages</h4>
+        </div>
+        <div class="card-body">
+            {% if sent_messages %}
+                <div class="list-group">
+                    {% for message in sent_messages %}
+                        <div class="list-group-item list-group-item-action flex-column align-items-start">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">To: {{ message.receiver.username }}</h5>
+                                <small class="text-muted">{{ message.timestamp }}</small>
+                            </div>
+                            <p class="mb-1">{{ message.content }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You have no sent messages.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Send New Message Section -->
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-white">
+            <h4>Send a New Message</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="receiver" class="text-warning">To</label>
+                    <select name="receiver" id="receiver" class="form-control">
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="content" class="text-warning">Message</label>
+                    <textarea name="content" id="content" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-warning">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
