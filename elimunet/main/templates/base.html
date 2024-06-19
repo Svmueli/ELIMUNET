@@ -30,6 +30,10 @@
             color: white;
         }
 
+        .sidebar {
+            width: 600px; 
+        }
+
         .sidebar .nav-link {
             font-weight: 500;
             color: #333;
@@ -41,6 +45,10 @@
 
         .sidebar .nav-link.active {
             color: #3c063e;
+        }
+
+        .main-content {
+            margin-left: 250px; 
         }
 
         .navbar {
@@ -59,7 +67,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static 'main/img/logo.png' %}" alt="Logo">
-            Elimunet
+            Elimunet E-Learning System
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

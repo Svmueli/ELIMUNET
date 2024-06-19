@@ -51,15 +51,20 @@
                 <table class="table table-striped table-sm">
                     <thead>
                         <tr>
-                            <th>#</th>
+                            <th>S/No</th>
                             <th>Classroom Name</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for classroom in classrooms %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'view_classroom' classroom.id %}">{{ classroom.name }}</a></td>
+                                <td><a href="{% url 'teacher_view_classroom' classroom.id %}">{{ classroom.name }}</a></td>
+                                <td>
+                                    <a href="{% url 'edit_classroom' classroom.id %}" class="btn btn-sm btn-warning">Edit</a>
+                                    <a href="{% url 'delete_classroom' classroom.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this classroom?');">Delete</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>

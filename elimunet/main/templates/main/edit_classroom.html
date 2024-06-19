@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4" style="color: #800080;">Edit Classroom: {{ classroom.name }}</h2>
+    <div class="card mb-4 border-warning">
+        <div class="card-header bg-warning text-white text-center">
+            <h4>Edit Classroom</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name" class="text-warning">Classroom Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ form.name.value }}">
+                </div>
+                <button type="submit" class="btn btn-warning">Update</button>
+            </form>
+            <a href="{% url 'teacher_dashboard' %}" class="btn btn-primary mt-3">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

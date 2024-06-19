@@ -1,10 +1,91 @@
 {% extends 'base.html' %}
 
+{% load static%}
+
 {% block content %}
-<h2>Create Classroom</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create</button>
-</form>
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="text-center">
+                    <img src="{% if user.userprofile.profile_picture %}{{ user.userprofile.profile_picture.url }}{% else %}{% static 'main/img/default-profile-avatar.png' %}{% endif %}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">
+                    <h5>{{ user.username }}</h5>
+                    <p class="text-muted">{{ user.userprofile.get_user_type_display }}</p>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'teacher_dashboard' %}">
+                            <span data-feather="home"></span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'create_classroom' %}">
+                            <span data-feather="plus-circle"></span>
+                            Create Classroom
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'announcements' %}">
+                            <span data-feather="bell"></span>
+                            Announcements
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'view_private_messages' %}">
+                            <span data-feather="message-square"></span>
+                            Messages
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Create Classroom</h1>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h4>Create a New Classroom</h4>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="id_name" class="text-success">Classroom Name</label>
+                                    {{ form.name }}
+                                </div>
+                                <button type="submit" class="btn btn-success">Create</button>
+                                {% if form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        {% for error in form.errors.values %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </form>
+                            {% if classroom_code %}
+                                <div class="alert alert-info mt-3">
+                                    <strong>Classroom Code:</strong> {{ classroom_code }}
+                                </div>
+                                <div class="alert alert-success mt-3">
+                                    Classroom created successfully!
+                                </div>
+                                <div class="d-flex justify-content-between mt-3">
+                                    <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">Back</a>
+                                    <a href="{% url 'create_classroom' %}" class="btn btn-primary">Create New Classroom</a>
+                                    <a href="{% url 'teacher_dashboard' %}" class="btn btn-success">Done</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
 {% endblock %}

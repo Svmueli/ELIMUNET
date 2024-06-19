@@ -7,12 +7,14 @@ from .forms import UserRegistrationForm, UserProfileForm, ClassroomCreationForm,
 from .models import Classroom, Assignment, Quiz, Announcement, Submission, Grade, ClassComment, PrivateMessage, Material, UserProfile
 import random
 import string
+from django.shortcuts import get_object_or_404
+
 
 def home(request):
     if request.user.is_authenticated:
         if request.user.is_staff:
-            return redirect('admin_dashboard')
-        elif request.user.userprofile.user_type == 'Teacher':
+            return redirect('admin:index')
+        elif request.user.userprofile.user_type == 'teacher':
             return redirect('teacher_dashboard')
         else:
             return redirect('student_dashboard')
@@ -44,8 +46,8 @@ def user_login(request):
             user = form.get_user()
             login(request, user)
             if user.is_staff:
-                return redirect('admin_dashboard')
-            elif user.userprofile.user_type == 'Teacher':
+                return redirect('admin:index')
+            elif user.userprofile.user_type == 'teacher':
                 return redirect('teacher_dashboard')
             else:
                 return redirect('student_dashboard')
@@ -68,6 +70,7 @@ def generate_unique_code():
 
 @login_required
 def create_classroom(request):
+    classroom_code = None
     if request.method == 'POST':
         form = ClassroomCreationForm(request.POST)
         if form.is_valid():
@@ -76,12 +79,34 @@ def create_classroom(request):
             classroom.code = generate_unique_code()
             classroom.save()
             classroom.members.add(request.user)
-            if request.user.is_staff:
-                return redirect('admin_dashboard')
-            return redirect('teacher_dashboard')
+            classroom_code = classroom.code
     else:
         form = ClassroomCreationForm()
-    return render(request, 'main/create_classroom.html', {'form': form})
+    return render(request, 'main/create_classroom.html', {'form': form, 'classroom_code': classroom_code})
+
+
+@login_required
+def edit_classroom(request, classroom_id):
+    classroom = get_object_or_404(Classroom, id=classroom_id)
+    if request.method == 'POST':
+        form = ClassroomCreationForm(request.POST, instance=classroom)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Classroom updated successfully.')
+            return redirect('teacher_dashboard')
+    else:
+        form = ClassroomCreationForm(instance=classroom)
+    return render(request, 'main/edit_classroom.html', {'form': form, 'classroom': classroom})
+
+@login_required
+def delete_classroom(request, classroom_id):
+    classroom = get_object_or_404(Classroom, id=classroom_id)
+    if request.method == 'POST':
+        classroom.delete()
+        messages.success(request, 'Classroom deleted successfully.')
+        return redirect('teacher_dashboard')
+    return render(request, 'main/delete_classroom.html', {'classroom': classroom})
+
 
 @login_required
 def join_classroom(request):
@@ -134,12 +159,33 @@ def create_assignment(request, classroom_id):
             assignment = form.save(commit=False)
             assignment.classroom = classroom
             assignment.save()
-            if request.user.is_staff:
-                return redirect('admin_dashboard')
-            return redirect('teacher_dashboard')
+            return redirect('view_classroom', classroom_id=classroom.id)
     else:
         form = AssignmentForm()
-    return render(request, 'main/create_assignment.html', {'form': form})
+    return render(request, 'main/create_assignment.html', {'form': form, 'classroom': classroom})
+
+@login_required
+def delete_assignment(request, classroom_id, assignment_id):
+    classroom = get_object_or_404(Classroom, id=classroom_id)
+    assignment = get_object_or_404(Assignment, id=assignment_id, classroom=classroom)
+    if request.method == 'POST':
+        assignment.delete()
+        return redirect('view_classroom', classroom_id=classroom.id)
+    return render(request, 'main/delete_assignment.html', {'assignment': assignment, 'classroom': classroom})
+
+@login_required
+def edit_assignment(request, classroom_id, assignment_id):
+    classroom = get_object_or_404(Classroom, id=classroom_id)
+    assignment = get_object_or_404(Assignment, id=assignment_id, classroom=classroom)
+    if request.method == 'POST':
+        form = AssignmentForm(request.POST, request.FILES, instance=assignment)
+        if form.is_valid():
+            form.save()
+            return redirect('view_classroom', classroom_id=classroom.id)
+    else:
+        form = AssignmentForm(instance=assignment)
+    return render(request, 'main/edit_assignment.html', {'form': form, 'classroom': classroom, 'assignment': assignment})
+
 
 @login_required
 def create_quiz(request, classroom_id):
@@ -155,7 +201,8 @@ def create_quiz(request, classroom_id):
             return redirect('teacher_dashboard')
     else:
         form = QuizForm()
-    return render(request, 'main/create_quiz.html', {'form': form})
+    return render(request, 'main/create_quiz.html', {'form': form, 'classroom': classroom})
+
 
 @login_required
 def create_announcement(request, classroom_id):
@@ -171,7 +218,8 @@ def create_announcement(request, classroom_id):
             return redirect('teacher_dashboard')
     else:
         form = AnnouncementForm()
-    return render(request, 'main/create_announcement.html', {'form': form})
+    return render(request, 'main/create_announcement.html', {'form': form, 'classroom': classroom})
+
 
 @login_required
 def upload_material(request, classroom_id):
@@ -187,7 +235,8 @@ def upload_material(request, classroom_id):
             return redirect('teacher_dashboard')
     else:
         form = MaterialForm()
-    return render(request, 'main/upload_material.html', {'form': form})
+    return render(request, 'main/upload_material.html', {'form': form, 'classroom': classroom})
+
 
 @login_required
 def view_classroom(request, classroom_id):
@@ -293,3 +342,8 @@ def view_private_messages(request):
         'sent_messages': sent_messages
         
     })
+
+@login_required
+def teacher_view_classroom(request, classroom_id):
+    classroom = Classroom.objects.get(id=classroom_id)
+    return render(request, 'main/teacher_view_classroom.html', {'classroom': classroom})

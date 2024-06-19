@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4">{{ classroom.name }}</h1>
+            <p class="lead text-muted">Code: {{ classroom.code }}</p>
+            <hr class="my-4">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="list-group">
+                <a href="{% url 'create_assignment' classroom.id %}" class="list-group-item list-group-item-action" style="background-color: #800080; color: white;">
+                    <span data-feather="file-text" class="mr-2"></span>Create Assignment
+                </a>
+                <a href="{% url 'create_quiz' classroom.id %}" class="list-group-item list-group-item-action" style="background-color: #008000; color: white;">
+                    <span data-feather="check-square" class="mr-2"></span>Create Quiz
+                </a>
+                <a href="{% url 'create_announcement' classroom.id %}" class="list-group-item list-group-item-action" style="background-color: #FFFF00; color: black;">
+                    <span data-feather="bell" class="mr-2"></span>Create Announcement
+                </a>
+                <a href="{% url 'upload_material' classroom.id %}" class="list-group-item list-group-item-action" style="background-color: #008000; color: white;">
+                    <span data-feather="upload" class="mr-2"></span>Upload Material
+                </a>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header text-white" style="background-color: #800080;">
+                    <h2>Classroom Details</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Teacher:</strong> {{ classroom.teacher.username }}</p>
+                    <p><strong>Created on:</strong> {{ classroom.created_at }}</p>
+                    <p><strong>Members:</strong></p>
+                    <ul class="list-group">
+                        {% for member in classroom.members.all %}
+                            <li class="list-group-item">{{ member.username }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
