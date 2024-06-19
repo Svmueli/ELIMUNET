@@ -1,17 +1,61 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
-<div class="card mx-auto" style="max-width: 600px; border-color: #800080;">
-    <div class="card-header text-white" style="background-color: #800080;">
-        <h2 class="mb-0">Welcome to Elimunet</h2>
-    </div>
-    <div class="card-body">
-        <p>Please log in to continue, or <a href="{% url 'register' %}">register</a> if you don't have an account.</p>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Log in</button>
-        </form>
+<div class="container mt-5">
+    <div class="card mx-auto border-purple" style="max-width: 800px;">
+        <div class="card-header bg-purple text-white text-center">
+            <h2 class="mb-0">Welcome to Elimunet</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead text-center">Empowering Education through Technology</p>
+            <div class="text-center my-4">
+                <img src="{% static 'main/img/logo.png' %}" alt="Elimunet Logo" class="img-fluid custom-logo-size">
+            </div>
+            <p class="text-center">Elimunet is your gateway to a comprehensive e-learning experience. Whether you are a teacher looking to create interactive classrooms or a student eager to learn, Elimunet offers the tools you need to succeed.</p>
+            <div class="text-center mt-4">
+                <a href="{% url 'login' %}" class="btn btn-purple btn-lg mr-3">Log in</a>
+                <a href="{% url 'register' %}" class="btn btn-green btn-lg">Register</a>
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .bg-purple {
+        background-color: #800080;
+    }
+
+    .text-purple {
+        color: #800080;
+    }
+
+    .btn-purple {
+        background-color: #800080;
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #6e006e;
+    }
+
+    .btn-green {
+        background-color: #0da11e;
+        color: white;
+    }
+
+    .btn-green:hover {
+        background-color: #0c8e19;
+    }
+
+    .border-purple {
+        border-color: #800080;
+    }
+
+    .custom-logo-size {
+        max-width: 200px; 
+        width: 100%;
+    }
+</style>
 {% endblock %}
