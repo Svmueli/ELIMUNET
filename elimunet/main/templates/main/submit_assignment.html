@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 600px; border-color: #800080;">
+        <div class="card-header text-white" style="background-color: #800080;">
+            <h2 class="mb-0">Submit Assignment</h2>
+        </div>
+        <div class="card-body">
+            <h3>{{ assignment.title }}</h3>
+            <p>{{ assignment.description }}</p>
+            <p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-green">Submit</button>
+            </form>
+            <div class="mt-3">
+                <a href="{% url 'view_assignment' assignment.id %}" class="btn btn-purple">Back to Assignment</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #800080;
+    }
+
+    .btn-green {
+        background-color: #0da11e;
+        color: white;
+    }
+
+    .btn-green:hover {
+        background-color: #0c8e19;
+    }
+
+    .btn-purple {
+        background-color: #800080;
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #6e006e;
+    }
+
+    .border-purple {
+        border-color: #800080;
+    }
+</style>
+{% endblock %}

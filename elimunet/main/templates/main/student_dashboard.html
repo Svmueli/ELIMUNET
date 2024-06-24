@@ -5,8 +5,8 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-            <div class="position-sticky pt-3">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color: #800080;">
+            <div class="position-sticky pt-3 text-white">
                 <div class="text-center">
                     <img src="{% if user.userprofile.profile_picture %}{{ user.userprofile.profile_picture.url }}{% else %}{% static 'main/img/default-profile-avatar.png' %}{% endif %}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">
                     <h5>{{ user.username }}</h5>
@@ -14,27 +14,33 @@
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'student_dashboard' %}">
+                        <a class="nav-link active text-white" aria-current="page" href="{% url 'student_dashboard' %}">
                             <span data-feather="home"></span>
                             Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'join_classroom' %}">
+                        <a class="nav-link text-white" href="{% url 'join_classroom' %}">
                             <span data-feather="plus-circle"></span>
                             Join Classroom
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'announcements' %}">
+                        <a class="nav-link text-white" href="{% url 'announcements' %}">
                             <span data-feather="bell"></span>
                             Announcements
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'view_private_messages' %}">
+                        <a class="nav-link text-white" href="{% url 'view_private_messages' %}">
                             <span data-feather="message-square"></span>
                             Messages
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'generate_pdf_report' %}">
+                            <span data-feather="file-text"></span>
+                            Generate Report
                         </a>
                     </li>
                 </ul>
@@ -43,13 +49,13 @@
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Student Dashboard</h1>
+                <h1 class="h2 text-purple">Student Dashboard</h1>
             </div>
 
-            <h2>Your Classrooms</h2>
+            <h2 class="text-green">Your Classrooms</h2>
             <div class="table-responsive">
                 <table class="table table-striped table-sm">
-                    <thead>
+                    <thead style="background-color: #ffff00;">
                         <tr>
                             <th>#</th>
                             <th>Classroom Name</th>
@@ -59,7 +65,33 @@
                         {% for classroom in classrooms %}
                             <tr>
                                 <td>{{ forloop.counter }}</td>
-                                <td><a href="{% url 'view_classroom' classroom.id %}">{{ classroom.name }}</a></td>
+                                <td><a href="{% url 'view_classroom' classroom.id %}" class="text-purple">{{ classroom.name }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="text-green">Your Assignments</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead style="background-color: #ffff00;">
+                        <tr>
+                            <th>#</th>
+                            <th>Assignment Title</th>
+                            <th>Due Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ assignment.title }}</td>
+                                <td>{{ assignment.due_date }}</td>
+                                <td>
+                                    <a href="{% url 'submit_assignment' assignment.id %}" class="btn btn-purple btn-sm">Submit Assignment</a>
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -68,4 +100,65 @@
         </main>
     </div>
 </div>
+
+<style>
+    .bg-purple {
+        background-color: #800080;
+    }
+
+    .text-purple {
+        color: #800080;
+    }
+
+    .btn-purple {
+        background-color: #800080;
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #6e006e;
+    }
+
+    .text-green {
+        color: #0da11e;
+    }
+
+    .bg-green {
+        background-color: #0da11e;
+    }
+
+    .btn-green {
+        background-color: #0da11e;
+        color: white;
+    }
+
+    .btn-green:hover {
+        background-color: #0c8e19;
+    }
+
+    .bg-yellow {
+        background-color: #ffff00;
+    }
+
+    .text-yellow {
+        color: #ffff00;
+    }
+
+    .btn-yellow {
+        background-color: #ffd700;
+        color: black;
+    }
+
+    .btn-yellow:hover {
+        background-color: #e6c200;
+    }
+
+    .sidebar {
+        background-color: #800080;
+    }
+
+    .nav-link.active {
+        background-color: #6e006e;
+    }
+</style>
 {% endblock %}

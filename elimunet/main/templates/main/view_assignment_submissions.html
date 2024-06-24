@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ assignment.title }} - Submissions</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Submission File</th>
+                <th>Date Submitted</th>
+                <th>Grade</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+                <tr>
+                    <td>{{ submission.student.username }}</td>
+                    <td><a href="{{ submission.file.url }}">Download</a></td>
+                    <td>{{ submission.date_submitted }}</td>
+                    <td>{{ submission.grade.grade|default:"Not graded" }}</td>
+                    <td>
+                        <a href="{% url 'grade_submission' submission.id %}" class="btn btn-primary btn-sm">Grade</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

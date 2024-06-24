@@ -1,24 +1,32 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h2>{{ assignment.title }}</h2>
-<p>{{ assignment.description }}</p>
-<p>Due Date: {{ assignment.due_date }}</p>
-{% if assignment.file %}
-    <a href="{{ assignment.file.url }}">Download Assignment File</a>
-{% endif %}
-<h3>Submissions</h3>
-{% if user.userprofile.user_type == 'teacher' %}
-    <ul>
-        {% for submission in assignment.submission_set.all %}
-            <li>{{ submission.student.username }} - <a href="{{ submission.file.url }}">Download</a> - <a href="{% url 'grade_submission' submission.id %}">Grade</a></li>
-        {% endfor %}
-    </ul>
-{% elif user.userprofile.user_type == 'student' %}
-    <form method="post" enctype="multipart/form-data" action="{% url 'submit_assignment' assignment.id %}">
-        {% csrf_token %}
-        <input type="file" name="file">
-        <button type="submit">Submit Assignment</button>
-    </form>
-{% endif %}
+<div class="container">
+    <h2>{{ assignment.title }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ assignment.title }}</h5>
+            <p class="card-text">{{ assignment.description }}</p>
+            <p class="card-text">Due Date: {{ assignment.due_date }}</p>
+            {% if submissions %}
+                <h3>Your Submissions</h3>
+                <ul class="list-group">
+                    {% for submission in submissions %}
+                        <li class="list-group-item">
+                            <a href="{{ submission.file.url }}">Download</a>
+                            <span>Submitted on: {{ submission.date_submitted }}</span>
+                            <span>Grade: {{ submission.grade.grade|default:"Not graded" }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You have not submitted this assignment yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% if not submissions %}
+        <a href="{% url 'submit_assignment' assignment.id %}" class="btn btn-primary mt-3">Submit Assignment</a>
+    {% endif %}
+</div>
 {% endblock %}

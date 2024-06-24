@@ -30,4 +30,10 @@ urlpatterns = [
     path('delete_classroom/<int:classroom_id>/', views.delete_classroom, name='delete_classroom'),
     path('classroom/<int:classroom_id>/delete_assignment/<int:assignment_id>/', views.delete_assignment, name='delete_assignment'),
     path('classroom/<int:classroom_id>/edit_assignment/<int:assignment_id>/', views.edit_assignment, name='edit_assignment'),
+    path('generate_pdf_report/', views.generate_pdf_report, name='generate_pdf_report'),
+    path('assignment/<int:assignment_id>/submissions/', views.view_assignment_submissions, name='view_assignment_submissions'),
+    path('submission/<int:submission_id>/grade/', views.grade_submission, name='grade_submission'),
+    path('grade_submission/<int:submission_id>/', views.grade_submission, name='grade_submission'),
+
+
 ]

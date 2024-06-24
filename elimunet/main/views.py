@@ -1,14 +1,22 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm, UserProfileForm, ClassroomCreationForm, JoinClassroomForm, AssignmentForm, QuizForm, AnnouncementForm, ClassCommentForm, PrivateMessageForm, MaterialForm
-from .models import Classroom, Assignment, Quiz, Announcement, Submission, Grade, ClassComment, PrivateMessage, Material, UserProfile
+from .forms import (
+    UserRegistrationForm, UserProfileForm, ClassroomCreationForm, JoinClassroomForm,
+    AssignmentForm, QuizForm, AnnouncementForm, ClassCommentForm, PrivateMessageForm,
+    MaterialForm, GradeForm, SubmissionForm
+)
+from .models import (
+    Classroom, Assignment, Quiz, Announcement, Submission, Grade, ClassComment, PrivateMessage,
+    Material, UserProfile, 
+)
 import random
 import string
-from django.shortcuts import get_object_or_404
-
+from django.http import FileResponse, HttpResponse
+from reportlab.pdfgen import canvas
+import io
 
 def home(request):
     if request.user.is_authenticated:
@@ -84,7 +92,6 @@ def create_classroom(request):
         form = ClassroomCreationForm()
     return render(request, 'main/create_classroom.html', {'form': form, 'classroom_code': classroom_code})
 
-
 @login_required
 def edit_classroom(request, classroom_id):
     classroom = get_object_or_404(Classroom, id=classroom_id)
@@ -106,7 +113,6 @@ def delete_classroom(request, classroom_id):
         messages.success(request, 'Classroom deleted successfully.')
         return redirect('teacher_dashboard')
     return render(request, 'main/delete_classroom.html', {'classroom': classroom})
-
 
 @login_required
 def join_classroom(request):
@@ -137,8 +143,10 @@ def teacher_dashboard(request):
 @login_required
 def student_dashboard(request):
     classrooms = Classroom.objects.filter(members=request.user)
+    assignments = Assignment.objects.filter(classroom__in=classrooms)
     return render(request, 'main/student_dashboard.html', {
         'classrooms': classrooms,
+        'assignments': assignments,
         'userprofile': request.user.userprofile,
     })
 
@@ -186,7 +194,6 @@ def edit_assignment(request, classroom_id, assignment_id):
         form = AssignmentForm(instance=assignment)
     return render(request, 'main/edit_assignment.html', {'form': form, 'classroom': classroom, 'assignment': assignment})
 
-
 @login_required
 def create_quiz(request, classroom_id):
     classroom = Classroom.objects.get(id=classroom_id)
@@ -202,7 +209,6 @@ def create_quiz(request, classroom_id):
     else:
         form = QuizForm()
     return render(request, 'main/create_quiz.html', {'form': form, 'classroom': classroom})
-
 
 @login_required
 def create_announcement(request, classroom_id):
@@ -220,7 +226,6 @@ def create_announcement(request, classroom_id):
         form = AnnouncementForm()
     return render(request, 'main/create_announcement.html', {'form': form, 'classroom': classroom})
 
-
 @login_required
 def upload_material(request, classroom_id):
     classroom = Classroom.objects.get(id=classroom_id)
@@ -236,7 +241,6 @@ def upload_material(request, classroom_id):
     else:
         form = MaterialForm()
     return render(request, 'main/upload_material.html', {'form': form, 'classroom': classroom})
-
 
 @login_required
 def view_classroom(request, classroom_id):
@@ -254,9 +258,43 @@ def view_classroom(request, classroom_id):
     })
 
 @login_required
+def grade_submission(request, submission_id):
+    submission = get_object_or_404(Submission, id=submission_id)
+    if request.method == 'POST':
+        form = GradeForm(request.POST)
+        if form.is_valid():
+            grade = form.save(commit=False)
+            grade.submission = submission
+            grade.save()
+            messages.success(request, 'Submission graded successfully.')
+            return redirect('view_assignment_submissions', assignment_id=submission.assignment.id)
+    else:
+        form = GradeForm()
+    return render(request, 'main/grade_submission.html', {'form': form, 'submission': submission})
+
+@login_required
+def view_assignment_submissions(request, assignment_id):
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    submissions = Submission.objects.filter(assignment=assignment)
+
+    if request.user != assignment.classroom.teacher:
+        messages.error(request, 'You are not authorized to view this page.')
+        return redirect('teacher_dashboard')
+
+    return render(request, 'main/view_assignment_submissions.html', {
+        'assignment': assignment,
+        'submissions': submissions,
+    })
+
+@login_required
 def view_assignment(request, assignment_id):
-    assignment = Assignment.objects.get(id=assignment_id)
-    return render(request, 'main/view_assignment.html', {'assignment': assignment})
+    assignment = get_object_or_404(Assignment, id=assignment_id)
+    submissions = Submission.objects.filter(assignment=assignment, student=request.user)
+    return render(request, 'main/view_assignment.html', {
+        'assignment': assignment,
+        'submissions': submissions,
+    })
+
 
 @login_required
 def view_quiz(request, quiz_id):
@@ -270,12 +308,19 @@ def view_announcement(request, announcement_id):
 
 @login_required
 def submit_assignment(request, assignment_id):
-    assignment = Assignment.objects.get(id=assignment_id)
+    assignment = get_object_or_404(Assignment, id=assignment_id)
     if request.method == 'POST':
-        file = request.FILES['file']
-        Submission.objects.create(assignment=assignment, student=request.user, file=file)
-        return redirect('view_assignment', assignment_id=assignment.id)
-    return redirect('view_assignment', assignment_id=assignment.id)
+        form = SubmissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.assignment = assignment
+            submission.student = request.user
+            submission.save()
+            messages.success(request, 'Assignment submitted successfully.')
+            return redirect('view_assignments', assignment_id=assignment.id)
+    else:
+        form = SubmissionForm()
+    return render(request, 'main/submit_assignment.html', {'form': form, 'assignment': assignment})
 
 @login_required
 def submit_quiz(request, quiz_id):
@@ -289,16 +334,6 @@ def submit_quiz(request, quiz_id):
         return render(request, 'main/quiz_result.html', {'quiz': quiz, 'result': result})
     return redirect('view_quiz', quiz_id=quiz.id)
 
-@login_required
-def grade_submission(request, submission_id):
-    submission = Submission.objects.get(id=submission_id)
-    if request.method == 'POST':
-        grade_value = request.POST.get('grade')
-        Grade.objects.create(submission=submission, grade=grade_value)
-        if request.user.is_staff:
-            return redirect('admin_dashboard')
-        return redirect('view_assignment', assignment_id=submission.assignment.id)
-    return render(request, 'main/grade_submission.html', {'submission': submission})
 
 @login_required
 def post_comment(request, classroom_id):
@@ -340,10 +375,24 @@ def view_private_messages(request):
     return render(request, 'main/view_private_messages.html', {
         'received_messages': received_messages,
         'sent_messages': sent_messages
-        
     })
 
 @login_required
 def teacher_view_classroom(request, classroom_id):
     classroom = Classroom.objects.get(id=classroom_id)
     return render(request, 'main/teacher_view_classroom.html', {'classroom': classroom})
+
+def generate_pdf_report(request):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer)
+
+    p.drawString(100, 800, "Elimunet Student Report")
+
+    student_count = UserProfile.objects.filter(user_type='student').count()
+    p.drawString(100, 750, f"Number of Students: {student_count}")
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='student_report.pdf')

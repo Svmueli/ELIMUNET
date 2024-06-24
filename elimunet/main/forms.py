@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import UserProfile, Classroom, Assignment, Quiz, Announcement, ClassComment, PrivateMessage, Material
+from .models import UserProfile, Classroom, Assignment, Quiz, Announcement, ClassComment, PrivateMessage, Material , Submission, Grade
 
 class UserRegistrationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -58,3 +58,14 @@ class MaterialForm(forms.ModelForm):
     class Meta:
         model = Material
         fields = ['title', 'file', 'description']
+
+class SubmissionForm(forms.ModelForm):
+    class Meta:
+        model = Submission
+        fields = ['file']
+
+
+class GradeForm(forms.ModelForm):
+    class Meta:
+        model = Grade
+        fields = ['grade']

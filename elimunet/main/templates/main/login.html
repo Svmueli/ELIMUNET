@@ -1,16 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card mx-auto" style="max-width: 500px; border-color: #800080;">
-    <div class="card-header text-white" style="background-color: #800080;">
-        <h2 class="mb-0">Login</h2>
-    </div>
-    <div class="card-body">
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-custom">Login</button>
-        </form>
+<div class="container mt-5">
+    <div class="card mx-auto border-purple" style="max-width: 500px;">
+        <div class="card-header bg-purple text-white text-center">
+            <h2 class="mb-0">Login</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="text-center">
+                    <button type="submit" class="btn btn-custom">Login</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<style>
+    .bg-purple {
+        background-color: #800080;
+    }
+
+    .text-white {
+        color: white;
+    }
+
+    .btn-custom {
+        background-color: #800080;
+        color: white;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .btn-custom:hover {
+        background-color: #6e006e;
+    }
+
+    .border-purple {
+        border-color: #800080;
+    }
+</style>
 {% endblock %}

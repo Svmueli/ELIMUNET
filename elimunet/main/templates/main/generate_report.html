@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card mx-auto border-purple" style="max-width: 600px;">
+        <div class="card-header bg-purple text-white text-center">
+            <h2 class="mb-0">Generate Reports</h2>
+        </div>
+        <div class="card-body text-center">
+            <p class="lead">Click the button below to generate a PDF report of all classrooms, assignments, quizzes, announcements, and students.</p>
+            <a href="{% url 'generate_pdf_report' %}" class="btn btn-purple btn-lg">Generate PDF Report</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #800080;
+    }
+
+    .text-white {
+        color: white;
+    }
+
+    .btn-purple {
+        background-color: #800080;
+        color: white;
+    }
+
+    .btn-purple:hover {
+        background-color: #6e006e;
+    }
+
+    .border-purple {
+        border-color: #800080;
+    }
+</style>
+{% endblock %}
