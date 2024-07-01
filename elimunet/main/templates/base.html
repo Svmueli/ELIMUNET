@@ -7,13 +7,16 @@
     <title>Elimunet</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        body {
+            background-color: blue;
+        }
         .footer {
             position: fixed;
             left: 0;
             bottom: 0;
             width: 100%;
             text-align: center;
-            background-color: rgb(178, 190, 176);
+            background-color: #ada3ad;
             padding: 10px 0;
         }
         .footer span {
@@ -63,7 +66,7 @@
 
     </style>
 </head>
-<body>
+<body style="background-color:whitesmoke;">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static 'main/img/logo.png' %}" alt="Logo">

@@ -18,6 +18,13 @@ from django.http import FileResponse, HttpResponse
 from reportlab.pdfgen import canvas
 import io
 
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from django.http import FileResponse
+import io
+
 def home(request):
     if request.user.is_authenticated:
         if request.user.is_staff:
@@ -382,17 +389,58 @@ def teacher_view_classroom(request, classroom_id):
     classroom = Classroom.objects.get(id=classroom_id)
     return render(request, 'main/teacher_view_classroom.html', {'classroom': classroom})
 
+@login_required
 def generate_pdf_report(request):
+    if not request.user.userprofile.user_type == 'teacher':
+        messages.error(request, "You are not authorized to view this report.")
+        return redirect('teacher_dashboard')
+
     buffer = io.BytesIO()
-    p = canvas.Canvas(buffer)
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    elements = []
+    styles = getSampleStyleSheet()
 
-    p.drawString(100, 800, "Elimunet Student Report")
+    # Add title
+    title = Paragraph("Teacher Report:Current Classes", styles['Title'])
+    elements.append(title)
+    elements.append(Spacer(1, 12))
 
-    student_count = UserProfile.objects.filter(user_type='student').count()
-    p.drawString(100, 750, f"Number of Students: {student_count}")
+    # Fetch teacher's classrooms and details
+    classrooms = Classroom.objects.filter(teacher=request.user)
+    for classroom in classrooms:
+        classroom_title = Paragraph(f"Classroom: {classroom.name}", styles['Heading3'])
+        elements.append(classroom_title)
+        elements.append(Spacer(1, 12))
 
-    p.showPage()
-    p.save()
+        # Assignments in the classroom
+        assignments = Assignment.objects.filter(classroom=classroom)
+        for assignment in assignments:
+            assignment_title = Paragraph(f"Assignment: {assignment.title}", styles['Heading4'])
+            elements.append(assignment_title)
 
+            # Students and their grades
+            submissions = Submission.objects.filter(assignment=assignment)
+            data = [["Student", "Grade"]]
+            for submission in submissions:
+                grade = submission.grade.grade if hasattr(submission, 'grade') else 'Not graded'
+                data.append([submission.student.username, grade])
+
+            table = Table(data)
+            table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ]))
+
+            elements.append(table)
+            elements.append(Spacer(1, 12))
+
+        elements.append(Spacer(1, 24))
+
+    doc.build(elements)
     buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename='student_report.pdf')
+    return FileResponse(buffer, as_attachment=True, filename='teacher_report.pdf')

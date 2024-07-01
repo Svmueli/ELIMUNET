@@ -34,6 +34,8 @@ urlpatterns = [
     path('assignment/<int:assignment_id>/submissions/', views.view_assignment_submissions, name='view_assignment_submissions'),
     path('submission/<int:submission_id>/grade/', views.grade_submission, name='grade_submission'),
     path('grade_submission/<int:submission_id>/', views.grade_submission, name='grade_submission'),
+    path('generate_teacher_report/', views.generate_pdf_report, name='generate_teacher_report'),
+
 
 
 ]
